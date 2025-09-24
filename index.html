@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulaire</title>
+</head>
+<body>
+  <h2>Formulaire de contact</h2>
+  <form id="myForm">
+    <input type="text" name="nom" placeholder="Votre nom" required><br><br>
+    <input type="email" name="email" placeholder="Votre email" required><br><br>
+    <textarea name="message" placeholder="Votre message"></textarea><br><br>
+    <button type="submit">Envoyer</button>
+  </form>
+
+  <p id="status"></p>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbyAnXLOkmxrinAlIKBeu4LtjbvP8CtQi4YYS-ILoSwtVGaPdFDbfTYHT_WtBdhAB4jaaA/exec"; // ⚠️ Mets ici l’URL du script Google Apps
+
+    document.getElementById("myForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = {};
+      formData.forEach((value, key) => { data[key] = value });
+
+      fetch(scriptURL, {
+        method: "POST",
+        body: JSON.stringify(data)
+      })
+      .then(res => document.getElementById("status").innerText = "✅ Réponse envoyée avec succès !")
+      .catch(err => document.getElementById("status").innerText = "❌ Erreur : " + err);
+    });
+  </script>
+</body>
+</html>
