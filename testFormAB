@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulaire aléatoire</title>
+  <style>
+    form { margin: 20px; padding: 15px; border: 1px solid #ccc; }
+    h2 { color: darkblue; }
+  </style>
+</head>
+<body>
+  <h1>Bienvenue</h1>
+  <div id="form-container"></div>
+
+  <script>
+    // Ton URL Google Apps Script
+    const scriptURL = "https://script.google.com/macros/s/AKfycbyhyWmOCvZ1xppLGlCXoJmQZoF7Rm-upa8KoYLe2anY8Lm6WjiofUGOFpwPj-7vYtraag/exec"; // ⚠️ Mets ici ton endpoint Google
+
+    // Choix aléatoire : soit "A", soit "B"
+    const formType = Math.random() < 0.5 ? "A" : "B";
+
+    // Génération dynamique du formulaire
+    let formHTML = "";
+    if (formType === "A") {
+      formHTML = `
+        <h2>Formulaire A</h2>
+        <form id="formA">
+          <input type="text" name="nom" placeholder="Nom" required><br><br>
+          <input type="email" name="email" placeholder="Email" required><br><br>
+          <input type="text" name="projet" placeholder="Projet"><br><br>
+          <button type="submit">Envoyer A</button>
+        </form>
+        <p id="statusA"></p>
+      `;
+    } else {
+      formHTML = `
+        <h2>Formulaire B</h2>
+        <form id="formB">
+          <input type="text" name="prenom" placeholder="Prénom" required><br><br>
+          <input type="number" name="age" placeholder="Âge"><br><br>
+          <textarea name="commentaire" placeholder="Votre commentaire"></textarea><br><br>
+          <button type="submit">Envoyer B</button>
+        </form>
+        <p id="statusB"></p>
+      `;
+    }
+
+    document.getElementById("form-container").innerHTML = formHTML;
+
+    // Fonction pour gérer l'envoi
+    function setupForm(id, statusId, type) {
+      const form = document.getElementById(id);
+      if (form) {
+        form.addEventListener("submit", e => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const data = {};
+          formData.forEach((value, key) => { data[key] = value });
+          data["type"] = type; // Ajout du type A ou B dans la réponse
+
+          fetch(scriptURL, {
+            method: "POST",
+            body: JSON.stringify(data)
+          })
+          .then(() => document.getElementById(statusId).innerText = "✅ Réponse envoyée avec succès !")
+          .catch(err => document.getElementById(statusId).innerText = "❌ Erreur : " + err);
+        });
+      }
+    }
+
+    setupForm("formA", "statusA", "A");
+    setupForm("formB", "statusB", "B");
+  </script>
+</body>
+</html>
